@@ -155,6 +155,7 @@ namespace StackMonitor
     protected override void OnClosing(CancelEventArgs e)
     {
       base.OnClosing(e);
+      StackMonitorClient.OpenQuestions.RemoveAll(q => q.Id == _question.Id);  
       if (_formImage != null)
       {
         _formImage.Dispose();

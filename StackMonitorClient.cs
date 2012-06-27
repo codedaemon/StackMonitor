@@ -19,6 +19,8 @@ namespace StackMonitor
 
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    public static List<Question> OpenQuestions { get; set; }
+
     public static Dictionary<BadgeRank, Brush> BadgeBrushes { get; set; }
 
     private User _connectedUser;
@@ -68,6 +70,7 @@ namespace StackMonitor
     public StackMonitorClient()
     {
       TagGroupList = new List<string>();
+      OpenQuestions = new List<Question>();
       MonitorQuestionNotificator.DisplayTime = Settings.Default.NewQuestionTimeout;
       MonitorReputationNotificator.DisplayTime = Settings.Default.ReputationChangeTimeout;
       MonitorBadgeNotificator.DisplayTime = Settings.Default.NewBadgeTimeout;
@@ -163,8 +166,13 @@ namespace StackMonitor
       switch ((NotificationType)e.ProgressPercentage)
       {
         case NotificationType.NewQuestion:
-          var notificator = new MonitorQuestionNotificator(e.UserState as Question);
-          notificator.Show();
+          var question = e.UserState as Question;
+          if (!OpenQuestions.Any(q => q.Id == question.Id))
+          {
+            OpenQuestions.Add(question);
+            var notificator = new MonitorQuestionNotificator(question);
+            notificator.Show();
+          }
           break;
         case NotificationType.ReputationChange:
           var repnotificator = new MonitorReputationNotificator(e.UserState as Reputation);
