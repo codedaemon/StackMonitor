@@ -60,10 +60,10 @@ namespace StackMonitor {
       if (_formImage != null) {
         _formImage.Dispose();
       }
-      _formImage = new Bitmap(300, 90);
+      _formImage = new Bitmap(400, 90);
       using (Graphics g = Graphics.FromImage(_formImage))
-      using (GraphicsPath path = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 0, 300, 90), 5, HelperClass.RectangleCorners.All))
-      using (GraphicsPath userPath = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 101, 300, 48), 5, HelperClass.RectangleCorners.All))
+      using (GraphicsPath path = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 0, 400, 90), 5, HelperClass.RectangleCorners.All))
+      using (GraphicsPath userPath = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 101, 400, 48), 5, HelperClass.RectangleCorners.All))
       using (SolidBrush userPathBrush = new SolidBrush(Color.FromArgb(150, 255, 255, 255)))
       using (Brush backgroundbrush = new LinearGradientBrush(Point.Empty, new Point(0, 150), Color.FromArgb(212, 212, 212), Color.FromArgb(145, 145, 145)))
       using (SolidBrush darkGreyBrush = new SolidBrush(Color.FromArgb(60, 60, 60)))
@@ -88,10 +88,10 @@ namespace StackMonitor {
         g.DrawLine(Pens.White, new Point(Bounds.Width - 14, 21), new Point(Bounds.Width - 4, 11));
         g.DrawLine(Pens.Black, new Point(Bounds.Width - 15, 10), new Point(Bounds.Width - 5, 20));
         g.DrawLine(Pens.Black, new Point(Bounds.Width - 15, 20), new Point(Bounds.Width - 5, 10));
-        g.DrawString(badge.Name, arial14, Brushes.White, new Rectangle(11, 21, 280, 35));
-        g.DrawString(badge.Name, arial14, Brushes.Black, new Rectangle(10, 20, 280, 35));
-        g.DrawString(badge.Description, arial12, Brushes.White, new Rectangle(51, 46, 240, 64));
-        g.DrawString(badge.Description, arial12, Brushes.Black, new Rectangle(50, 45, 240, 64));
+        g.DrawString(badge.Name, arial14, Brushes.White, new Rectangle(11, 21, 380, 35));
+        g.DrawString(badge.Name, arial14, Brushes.Black, new Rectangle(10, 20, 380, 35));
+        g.DrawString(badge.Description, arial12, Brushes.White, new Rectangle(51, 46, 340, 64));
+        g.DrawString(badge.Description, arial12, Brushes.Black, new Rectangle(50, 45, 340, 64));
         g.FillEllipse(StackMonitorClient.BadgeBrushes[badge.Rank], new Rectangle(18, 50, 25, 25));
         using (GraphicsPath highlightpath = new GraphicsPath())
         using (SolidBrush highlightbrush = new SolidBrush(Color.FromArgb(50, 255, 255, 255))) {

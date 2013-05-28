@@ -74,9 +74,9 @@ namespace StackMonitor {
       if (_formImage != null) {
         _formImage.Dispose();
       }
-      _formImage = new Bitmap(300, this.Height);
+      _formImage = new Bitmap(400, this.Height);
       using (Graphics g = Graphics.FromImage(_formImage))
-      using (GraphicsPath path = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 0, 300, this.Height), 5, HelperClass.RectangleCorners.All))
+      using (GraphicsPath path = HelperClass.GenerateRoundedRectPath(new Rectangle(0, 0, 400, this.Height), 5, HelperClass.RectangleCorners.All))
       using (Brush backgroundbrush = new LinearGradientBrush(Point.Empty, new Point(0, this.Height), Color.FromArgb(212, 212, 212), Color.FromArgb(145, 145, 145)))
       using (SolidBrush darkGreyBrush = new SolidBrush(Color.FromArgb(60, 60, 60)))
       using (StringFormat centerformat = new StringFormat())
@@ -99,14 +99,14 @@ namespace StackMonitor {
         g.DrawLine(Pens.White, new Point(Bounds.Width - 14, 21), new Point(Bounds.Width - 4, 11));
         g.DrawLine(Pens.Black, new Point(Bounds.Width - 15, 10), new Point(Bounds.Width - 5, 20));
         g.DrawLine(Pens.Black, new Point(Bounds.Width - 15, 20), new Point(Bounds.Width - 5, 10));
-        g.DrawString(reputation.Title, arial11, Brushes.White, new Rectangle(11, 16, 280, 35));
-        g.DrawString(reputation.Title, arial11, Brushes.Black, new Rectangle(10, 15, 280, 35));
+        g.DrawString(reputation.Title, arial11, Brushes.White, new Rectangle(11, 16, 380, 35));
+        g.DrawString(reputation.Title, arial11, Brushes.Black, new Rectangle(10, 15, 380, 35));
         int yposition = 60;
         //first, see if the reputation change contains a accepted answer ( +15 rep )
         if (reputation.Type == "answer" && reputation.PositiveRep % 10 != 0) {
           g.DrawImage(Properties.Resources.img_acceptedanswer, new Rectangle(30, yposition + 3, 24, 24));
-          g.DrawString("Your answer is marked as accepted!", arial10, Brushes.White, new Rectangle(61, yposition + 1, 230, 30), centerformat);
-          g.DrawString("Your answer is marked as accepted!", arial10, Brushes.Black, new Rectangle(60, yposition, 230, 30), centerformat);
+          g.DrawString("Your answer is marked as accepted!", arial10, Brushes.White, new Rectangle(61, yposition + 1, 330, 30), centerformat);
+          g.DrawString("Your answer is marked as accepted!", arial10, Brushes.Black, new Rectangle(60, yposition, 330, 30), centerformat);
           reputation.PositiveRep -= 15;
           yposition += 30;
         }
@@ -117,15 +117,15 @@ namespace StackMonitor {
           else
             count = reputation.PositiveRep / 5;
           g.DrawImage(Properties.Resources.img_upvote, new Rectangle(30, yposition + 3, 24, 24));
-          g.DrawString(count + " new upvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.White, new Rectangle(61, yposition + 1, 230, 30), centerformat);
-          g.DrawString(count + " new upvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.Black, new Rectangle(60, yposition, 230, 30), centerformat);
+          g.DrawString(count + " new upvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.White, new Rectangle(61, yposition + 1, 330, 30), centerformat);
+          g.DrawString(count + " new upvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.Black, new Rectangle(60, yposition, 330, 30), centerformat);
           yposition += 30;
         }
         if (reputation.NegativeRep > 0) {
           g.DrawImage(Properties.Resources.img_downvote, new Rectangle(30, yposition + 3, 24, 24));
           int count = reputation.NegativeRep / 2;
-          g.DrawString(count + " new downvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.White, new Rectangle(61, yposition + 1, 230, 30), centerformat);
-          g.DrawString(count + " new downvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.Black, new Rectangle(60, yposition, 230, 30), centerformat);
+          g.DrawString(count + " new downvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.White, new Rectangle(61, yposition + 1, 330, 30), centerformat);
+          g.DrawString(count + " new downvote" + (count > 1 ? "s" : "") + " received.", arial10, Brushes.Black, new Rectangle(60, yposition, 330, 30), centerformat);
         }
       }
     }
