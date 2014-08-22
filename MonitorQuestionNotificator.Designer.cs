@@ -23,21 +23,21 @@
     /// the contents of this method with the code editor.
     /// </summary>
     private void InitializeComponent() {
-      this.SuspendLayout();
-      // 
-      // MonitorQuestionNotificator
-      // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-      this.ClientSize = new System.Drawing.Size(300, 150);
-      this.DoubleBuffered = true;
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-      this.Name = "MonitorQuestionNotificator";
-      this.ShowInTaskbar = false;
-      this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-      this.Text = "Form1";
-      this.ResumeLayout(false);
+            this.SuspendLayout();
+            // 
+            // MonitorQuestionNotificator
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.ClientSize = new System.Drawing.Size(300, 185);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "MonitorQuestionNotificator";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Text = "Form1";
+            this.ResumeLayout(false);
 
     }
 

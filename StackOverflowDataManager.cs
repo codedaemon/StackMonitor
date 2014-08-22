@@ -30,20 +30,18 @@ namespace StackMonitor
         {
             taggroup = WebUtility.HtmlEncode(taggroup);
             taggroup = taggroup.Replace("#", "%23");
-            //string jsonData = RequestData(@"http://api.stackoverflow.com/1.0/questions?key=xyaFp-6X1Umk-YpXHdruDA&tagged=" + taggroup + @"&sort=creation&body=true&fromdate=" + lastchecktime);
-            string jsonData = RequestData(@"http://api.stackexchange.com/2.2/questions?site=stackoverflow&tagged=" + taggroup + @"&sort=creation&body=true&fromdate=" + lastchecktime);
+            string jsonData = RequestData(@"http://api.stackexchange.com/2.2/questions?site=stackoverflow&tagged=" + taggroup + @"&sort=creation&body=true&filter=!9YdnSJBlX&fromdate=" + lastchecktime);
             if (string.IsNullOrEmpty(jsonData))
             {
                 return null;
             }
             List<Question> result = GetQuestionsNewerThanQuestionId(jsonData);
-            result.ForEach(r => r.Owner = PopulateUserInformation(r.Owner.Id, 32));
+            result.ForEach(r => r.Owner = PopulateUserInformation(r.Owner.Id, 32)); //todo: we do not have to do this to get the questions now. we can get them from the main response
             return result;
         }
         public List<Reputation> GetReputationChanges(int userid, long lastreputationchecktime)
         {
-            //string jsonData = RequestData(@"http://api.stackexchange.com/2.2/users/" + userid + @"/reputation?key=xyaFp-6X1Umk-YpXHdruDA&fromdate=" + lastreputationchecktime);
-            string jsonData = RequestData(@"http://api.stackexchange.com/2.2/users/" + userid + @"/reputation?site=stackoverflow&fromdate=" + lastreputationchecktime);
+            string jsonData = RequestData(@"http://api.stackexchange.com/2.2/users/" + userid + @"/reputation?site=stackoverflow&filter=!9YdnS7JvI&fromdate=" + lastreputationchecktime);
             if (string.IsNullOrEmpty(jsonData))
             {
                 return null;
@@ -53,7 +51,7 @@ namespace StackMonitor
 
         public List<Badge> GetNewBadges(int userid, long lastchecktime)
         {
-            string jsonData = RequestData(@"http://api.stackoverflow.com/1.0/users/" + userid + @"/timeline?key=xyaFp-6X1Umk-YpXHdruDA&pagesize=100&fromdate=" + lastchecktime);
+            string jsonData = RequestData(@"http://api.stackexchange.com/2.2/users/" + userid + @"/badges?site=stackoverflow&pagesize=100&filter=!9YdnSNoYZ&fromdate=" + lastchecktime);
             if (string.IsNullOrEmpty(jsonData))
             {
                 return null;
@@ -161,7 +159,7 @@ namespace StackMonitor
                 };
                 newquestion.Score = (int)question.SelectToken("score");
                 newquestion.Title = (string)question.SelectToken("title");
-                //newquestion.Body = ParseHTMLString((string)question.SelectToken("body")); //todo: body is not sent in new API. must fetch seperately
+                newquestion.Body = ParseHTMLString((string) question.SelectToken("body"));
                 results.Add(newquestion);
             }
             return results;
@@ -182,7 +180,7 @@ namespace StackMonitor
                 var pointchange = (int)repchange.SelectToken("reputation_change");
                 var newreputation = new Reputation();
                 newreputation.Type = (string)repchange.SelectToken("post_type");
-                newreputation.Title = (string)repchange.SelectToken("title"); //todo: Title is not in result anymore. Have to do seperate call to get it.
+                newreputation.Title = (string)repchange.SelectToken("title"); 
                 newreputation.PositiveRep = pointchange > 0 ? pointchange : 0;
                 newreputation.NegativeRep = pointchange < 0 ? pointchange : 0;
                 newreputation.TimeStamp = (long)repchange.SelectToken("on_date");
@@ -196,54 +194,66 @@ namespace StackMonitor
         {
             var results = new List<Badge>();
             var jobject = Newtonsoft.Json.Linq.JObject.Parse(jsonData);
-            var newbadges = jobject.SelectToken("user_timelines").Where(tl => (string)tl.SelectToken("timeline_type") == "badge");
+            var newbadges = jobject.SelectToken("items");
             foreach (var newbadge in newbadges)
             {
-                if (badgeDefinitions == null)
-                {
-                    //the badge definitions is not loaded yet. Load them from the API now.
-                    LoadBadgeDefinitions();
-                }
+                //if (badgeDefinitions == null)
+                //{
+                //    //the badge definitions is not loaded yet. Load them from the API now.
+                //    LoadBadgeDefinitions();
+                //}
                 Badge badge = new Badge();
-                badge.Name = (string)newbadge.SelectToken("description");
-                badge.Description = (string)newbadge.SelectToken("detail") + '.';
+                badge.Name = (string)newbadge.SelectToken("name");
+                badge.Description = (string)newbadge.SelectToken("description") + '.';
                 badge.TimeStamp = (long)newbadge.SelectToken("creation_date");
                 //find the rank from the definitions
-                badge.Rank = badgeDefinitions.Where(b => b.Name == badge.Name).Where(b => b.Description == badge.Description).Select(b => b.Rank).Single();
+                //badge.Rank = badgeDefinitions.Where(b => b.Name == badge.Name).Where(b => b.Description == badge.Description).Select(b => b.Rank).Single();
+                switch ((string)newbadge.SelectToken("rank"))
+                {
+                    case "bronze":
+                        badge.Rank = BadgeRank.Bronze;
+                        break;
+                    case "silver":
+                        badge.Rank = BadgeRank.Silver;
+                        break;
+                    case "gold":
+                        badge.Rank = BadgeRank.Gold;
+                        break;
+                }
                 results.Add(badge);
             }
             return results;
         }
 
-        private void LoadBadgeDefinitions()
-        {
-            string jsonData = RequestData(@"http://api.stackoverflow.com/1.0/badges/");
-            badgeDefinitions = new List<Badge>();
-            if (!string.IsNullOrEmpty(jsonData))
-            {
-                var jobject = Newtonsoft.Json.Linq.JObject.Parse(jsonData);
-                var definitions = jobject.SelectToken("badges");
-                foreach (var definition in definitions)
-                {
-                    Badge badge = new Badge();
-                    badge.Name = (string)definition.SelectToken("name");
-                    badge.Description = (string)definition.SelectToken("description") + '.';
-                    switch ((string)definition.SelectToken("rank"))
-                    {
-                        case "bronze":
-                            badge.Rank = BadgeRank.Bronze;
-                            break;
-                        case "silver":
-                            badge.Rank = BadgeRank.Silver;
-                            break;
-                        case "gold":
-                            badge.Rank = BadgeRank.Gold;
-                            break;
-                    }
-                    badgeDefinitions.Add(badge);
-                }
-            }
-        }
+        //private void LoadBadgeDefinitions()
+        //{
+        //    string jsonData = RequestData(@"http://api.stackoverflow.com/1.0/badges/");
+        //    badgeDefinitions = new List<Badge>();
+        //    if (!string.IsNullOrEmpty(jsonData))
+        //    {
+        //        var jobject = Newtonsoft.Json.Linq.JObject.Parse(jsonData);
+        //        var definitions = jobject.SelectToken("badges");
+        //        foreach (var definition in definitions)
+        //        {
+        //            Badge badge = new Badge();
+        //            badge.Name = (string)definition.SelectToken("name");
+        //            //badge.Description = (string)definition.SelectToken("description") + '.'; todo: not given by the new api. have to ask seperately.
+        //            switch ((string)definition.SelectToken("rank"))
+        //            {
+        //                case "bronze":
+        //                    badge.Rank = BadgeRank.Bronze;
+        //                    break;
+        //                case "silver":
+        //                    badge.Rank = BadgeRank.Silver;
+        //                    break;
+        //                case "gold":
+        //                    badge.Rank = BadgeRank.Gold;
+        //                    break;
+        //            }
+        //            badgeDefinitions.Add(badge);
+        //        }
+        //    }
+        //}
 
         public User PopulateUserInformation(int userid, int imagesize)
         {

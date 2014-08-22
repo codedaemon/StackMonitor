@@ -105,12 +105,12 @@ namespace StackMonitor
 
     void _monitorWorker_DoWork(object sender, DoWorkEventArgs e)
     {
-      int reputationcheckcounter = 8;
-      int newbadgecheckcounter = 58;
+      int reputationcheckcounter = 3;
+      int newbadgecheckcounter = 18;
       while (!_monitorWorker.CancellationPending)
       {
-        //check every 5 seconds here if a new question has arrived on stack overflow
-        Thread.Sleep(5000);
+        //check every 30 seconds here if a new question has arrived on stack overflow
+        Thread.Sleep(30000);
         //TODO: What happens here if a question belongs to several TAG groups. Will the question be displayed several times?
         foreach (string taggroup in TagGroupList)
         {
@@ -124,7 +124,7 @@ namespace StackMonitor
             }
           }
         }
-        if (reputationcheckcounter >= 10 && ConnectedUser != null)
+        if (reputationcheckcounter >= 4 && ConnectedUser != null)
         {
           reputationcheckcounter = 0;
           var newreputationchanges = datamanager.GetReputationChanges(ConnectedUser.Id, reputationlastchecktime);
@@ -141,7 +141,7 @@ namespace StackMonitor
           }
         }
         reputationcheckcounter++;
-        if (newbadgecheckcounter >= 60 && ConnectedUser != null)
+        if (newbadgecheckcounter >= 20 && ConnectedUser != null)
         {
           newbadgecheckcounter = 0;
           var newbadgechanges = datamanager.GetNewBadges(ConnectedUser.Id, newbadgeschecktime);

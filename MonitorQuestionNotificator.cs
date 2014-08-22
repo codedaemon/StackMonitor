@@ -146,7 +146,7 @@ namespace StackMonitor
       {
         if (!string.IsNullOrEmpty(_question.URL))
         {
-          Process.Start("http://www.stackoverflow.com" + _question.URL);
+          Process.Start(_question.URL);
         }
         animator.FadeOut();
       }
